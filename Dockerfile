@@ -8,5 +8,5 @@ RUN addgroup -g 1000 unprivileged && \
 USER unprivileged
 WORKDIR /home/unprivileged
 
-COPY build/aws-share-rds-snapshot /home/unprivileged/aws-share-rds-snapshot"
+COPY ./build/ "/home/unprivileged/aws-share-rds-snapshot"
 ENTRYPOINT ["/home/unprivileged/aws-share-rds-snapshot"]
