@@ -4,14 +4,15 @@ import (
 	"flag"
 
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/rds"
 	"github.com/golang/glog"
-	"os"
-	"time"
 )
 
 type AwsShareSnapshot struct {
@@ -19,6 +20,7 @@ type AwsShareSnapshot struct {
 	DestAccount   AwsAccount
 	RetentionTime float64
 	DBName        string
+	KmsKeyID      string
 }
 
 type AwsAccount struct {
@@ -55,6 +57,7 @@ func init() {
 	flagset.StringVar(&awsShareSnapshot.DestAccount.SecretAccessKey, "dest-secret-access-key", os.Getenv("AWS_DEST_SECRET_KEY"), "AWS destination access key")
 	flagset.StringVar(&awsShareSnapshot.DestAccount.AccountID, "dest-account-id", os.Getenv("AWS_DEST_ACCOUNT_ID"), "AWS destination account id")
 
+	flagset.StringVar(&awsShareSnapshot.KmsKeyID, "kms-key-id", os.Getenv("AWS_KMS_KEY_ID"), "AWS KMS key ID for an encrypted snapshot")
 	flagset.Float64Var(&awsShareSnapshot.RetentionTime, "retention-time", 604800, "Time in seconds to maintain the snapshot")
 	flagset.StringVar(&awsShareSnapshot.DBName, "db-name", os.Getenv("DATABASE_NAME"), "Database name")
 
@@ -193,8 +196,12 @@ func (awsShareSnapshot *AwsShareSnapshot) CopySnapshot() error {
 		awsShareSnapshot.SrcAccount.AccountID, awsShareSnapshot.dbSnapshotName())
 	dbSnapname := "cp-" + awsShareSnapshot.dbSnapshotName()
 
-	_, err := awsShareSnapshot.DestAccount.RDSConnection.CopyDBSnapshot(&rds.CopyDBSnapshotInput{SourceDBSnapshotIdentifier: aws.String(dbCopyName),
-		TargetDBSnapshotIdentifier: aws.String(dbSnapname)})
+	_, err := awsShareSnapshot.DestAccount.RDSConnection.CopyDBSnapshot(
+		&rds.CopyDBSnapshotInput{
+			SourceDBSnapshotIdentifier: aws.String(dbCopyName),
+			TargetDBSnapshotIdentifier: aws.String(dbSnapname),
+			KmsKeyId:                   aws.String(awsShareSnapshot.KmsKeyID),
+		})
 
 	if err != nil &&
 		//we could accept error: already exist snapshot

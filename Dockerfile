@@ -1,12 +1,12 @@
-FROM alpine:3.5
+FROM golang:1.12.1-alpine3.9 as builder
+WORKDIR /go/src/github.com/pawsdotcom/aws-share-rds-snapshot
+RUN apk --no-cache add git ca-certificates
+RUN go get -d -v golang.org/x/net/html github.com/aws/aws-sdk-go github.com/golang/glog
+COPY main.go .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 
-ENV USER=didi
-RUN addgroup -g 1000 unprivileged && \
-    adduser -G unprivileged -h /home/unprivileged -u 1000 -D unprivileged && \
-    apk add ca-certificates --no-cache
-
-USER unprivileged
-WORKDIR /home/unprivileged
-
-COPY ./build/ "/home/unprivileged/aws-share-rds-snapshot"
-ENTRYPOINT ["/home/unprivileged/aws-share-rds-snapshot"]
+FROM alpine:latest  
+RUN apk --no-cache add git ca-certificates
+WORKDIR /root/
+COPY --from=builder /go/src/github.com/pawsdotcom/aws-share-rds-snapshot/app .
+CMD ["./app"] 
