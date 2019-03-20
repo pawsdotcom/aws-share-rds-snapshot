@@ -4,10 +4,12 @@
       service: aws-share-rds-snapshot
       type: push
       image_name:  pawsdotcom/aws-share-rds-snapshot
+      encrypted_dockercfg_path: dockercfg.encrypted
       image_tag: "commit-{{.CommitID}}"
     - name: push_latest
       service: aws-share-rds-snapshot
       tag: master
       type: push
       image_name:  pawsdotcom/aws-share-rds-snapshot
+      encrypted_dockercfg_path: dockercfg.encrypted
       image_tag: latest
