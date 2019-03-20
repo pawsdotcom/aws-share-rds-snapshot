@@ -1,0 +1,5 @@
+infrastructure:
+  build:
+    image: pawsdotcom/aws-share-rds-snapshot
+    context: ./
+    dockerfile: Dockerfile

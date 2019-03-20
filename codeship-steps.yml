@@ -11,8 +11,4 @@
       type: push
       image_name:  pawsdotcom/aws-share-rds-snapshot
       image_tag: latest
-    - name: push_branch
-      service: infrastructure
-      type: push
-      image_name:  pawsdotcom/aws-share-rds-snapshot
-      image_tag: "branch-{{.Branch}}"
+  
