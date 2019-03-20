@@ -11,4 +11,3 @@
       type: push
       image_name:  pawsdotcom/aws-share-rds-snapshot
       image_tag: latest
-  

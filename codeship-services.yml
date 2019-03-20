@@ -1,4 +1,4 @@
-infrastructure:
+aws-share-rds-snapshot:
   build:
     image: pawsdotcom/aws-share-rds-snapshot
     context: ./
