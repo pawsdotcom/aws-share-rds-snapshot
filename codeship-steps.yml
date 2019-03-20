@@ -1,12 +1,12 @@
 - type: parallel
   steps:
     - name: push_commit
-      service: infrastructure
+      service: aws-share-rds-snapshot
       type: push
       image_name:  pawsdotcom/aws-share-rds-snapshot
       image_tag: "commit-{{.CommitID}}"
     - name: push_latest
-      service: infrastructure
+      service: aws-share-rds-snapshot
       tag: master
       type: push
       image_name:  pawsdotcom/aws-share-rds-snapshot
